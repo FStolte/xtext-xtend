@@ -7,8 +7,15 @@
  */
 package org.eclipse.xtend.idea.imports;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiFile;
+import org.eclipse.xtend.core.idea.lang.XtendLanguage;
 import org.eclipse.xtend.idea.LightXtendTest;
 import org.eclipse.xtend2.lib.StringConcatenation;
+import org.eclipse.xtext.xbase.idea.imports.XImportSectionOptimizer;
+import org.junit.Assert;
 
 /**
  * @author Sven Efftinge - Initial contribution and API
@@ -85,28 +92,16 @@ public class ImportOptimizerTest extends LightXtendTest {
   }
   
   public void assertAfterOptimizeImports(final CharSequence before, final String expected) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field XtendLanguage is undefined"
-      + "\nThe method or field XImportSectionOptimizer is undefined"
-      + "\nThe method or field CommandProcessor is undefined"
-      + "\nThe method or field project is undefined"
-      + "\nThe method or field ApplicationManager is undefined"
-      + "\nThe method or field PsiDocumentManager is undefined"
-      + "\nThe method getProject() is undefined"
-      + "\nThe method or field Assert is undefined"
-      + "\naddFileToProject cannot be resolved"
-      + "\nINSTANCE cannot be resolved"
-      + "\ngetInstance cannot be resolved"
-      + "\nprocessFile cannot be resolved"
-      + "\ninstance cannot be resolved"
-      + "\nexecuteCommand cannot be resolved"
-      + "\napplication cannot be resolved"
-      + "\nrunWriteAction cannot be resolved"
-      + "\nrun cannot be resolved"
-      + "\ngetInstance cannot be resolved"
-      + "\ncommitAllDocuments cannot be resolved"
-      + "\nassertEquals cannot be resolved"
-      + "\ngetText cannot be resolved");
+    final PsiFile file = this.myFixture.addFileToProject("MyClass.xtend", before.toString());
+    final Runnable runnable = XtendLanguage.INSTANCE.<XImportSectionOptimizer>getInstance(XImportSectionOptimizer.class).processFile(file);
+    final Runnable _function = () -> {
+      final Runnable _function_1 = () -> {
+        runnable.run();
+      };
+      ApplicationManager.getApplication().runWriteAction(_function_1);
+      PsiDocumentManager.getInstance(this.getProject()).commitAllDocuments();
+    };
+    CommandProcessor.getInstance().executeCommand(this.getProject(), _function, "", "");
+    Assert.assertEquals(expected.toString(), file.getText());
   }
 }

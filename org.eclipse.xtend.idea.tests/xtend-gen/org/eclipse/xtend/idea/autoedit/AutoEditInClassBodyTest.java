@@ -7,6 +7,8 @@
  */
 package org.eclipse.xtend.idea.autoedit;
 
+import com.intellij.psi.PsiFile;
+import org.eclipse.xtend.idea.autoedit.AbstractCStyleLanguageAutoEditTest;
 import org.eclipse.xtend.idea.autoedit.AutoEditTest;
 
 /**
@@ -19,218 +21,157 @@ public class AutoEditInClassBodyTest extends AutoEditTest {
   private final static String SUFFIX = "\n}";
   
   @Override
-  protected Object configureByText(final String code) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method configureByText(Object) is undefined for the type AutoEditTest"
-      + "\n+ cannot be resolved."
-      + "\n+ cannot be resolved");
+  protected PsiFile configureByText(final String code) {
+    return super.configureByText(((AutoEditInClassBodyTest.PREFIX + code) + AutoEditInClassBodyTest.SUFFIX));
   }
   
   @Override
-  protected Object assertState(final String editorState) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method assertState(Object) is undefined for the type AutoEditTest"
-      + "\n+ cannot be resolved."
-      + "\n+ cannot be resolved");
+  protected void assertState(final String editorState) {
+    super.assertState(((AutoEditInClassBodyTest.PREFIX + editorState) + AutoEditInClassBodyTest.SUFFIX));
   }
   
   @Override
   public void testCurlyBracesBlock_1() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved");
+    this.configureByText("|");
+    this.myFixture.type("{");
+    this.assertState("\t{|}");
+    this.myFixture.type("\n");
+    this.assertState("\t{\n\t\t|\n\t}");
+    this.myFixture.type("\n");
+    this.assertState("\t{\n\t\t\n\t\t|\n\t}");
   }
   
   @Override
   public void testIndentationEdit_2() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved");
+    this.configureByText("  |");
+    this.myFixture.type("\n");
+    this.assertState("  \n\t|");
   }
   
   @Override
   public void testBug341093_01() {
-    throw new Error("Unresolved compilation problems:"
-      + "\n+ cannot be resolved."
-      + "\nThe method or field myFixture is undefined"
-      + "\n+ cannot be resolved."
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved"
-      + "\n+ cannot be resolved");
+    this.configureByText(("/**/\n" + "//test|"));
+    this.myFixture.type("\n");
+    this.assertState((("/**/\n" + "//test\n") + "\t|"));
   }
   
   @Override
   public void testBug341093_02() {
-    throw new Error("Unresolved compilation problems:"
-      + "\n+ cannot be resolved."
-      + "\nThe method or field myFixture is undefined"
-      + "\n+ cannot be resolved."
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\n+ cannot be resolved"
-      + "\ntype cannot be resolved"
-      + "\n+ cannot be resolved"
-      + "\n+ cannot be resolved");
+    this.configureByText((("/*\n" + " **/\n") + "//test|"));
+    this.myFixture.type("\n");
+    this.assertState(((("/*\n" + " **/\n") + "//test\n") + "\t|"));
   }
   
   @Override
   public void testMLComments_07() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved");
+    this.configureByText("/* */|");
+    this.myFixture.type("\n");
+    this.assertState("/* */\n\t|");
   }
   
   @Override
   public void testMLComments_11() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved");
+    this.configureByText("/* */\n * |");
+    this.myFixture.type("\n");
+    this.assertState("/* */\n * \n\t|");
   }
   
   @Override
   public void testSingleLineComment_03() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved");
+    this.configureByText("  // test|");
+    this.myFixture.type("\n");
+    this.assertState("  // test\n\t|");
   }
   
   @Override
   public void testSingleLineComment_04() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved");
+    this.configureByText("  // test|\n");
+    this.myFixture.type("\n");
+    this.assertState("  // test\n\t|\n");
   }
   
   @Override
   public void testCurlyBracesBlock_10() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved");
+    this.configureByText("/*{*/ foo|");
+    this.myFixture.type("\n");
+    this.assertState("/*{*/ foo\n|");
   }
   
   @Override
   public void testCurlyBracesBlock_17() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved");
+    this.configureByText("{\n|");
+    this.myFixture.type("\n");
+    this.assertState("{\n\n\t|");
   }
   
   @Override
   public void testCurlyBracesBlock_19() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved");
+    this.configureByText("{{|");
+    this.myFixture.type("\n");
+    this.assertState("{{\n\t|\n}}");
+    this.myFixture.type("\n");
+    this.assertState("{{\n\t\n\t|\n}}");
   }
   
   @Override
   public void testParenthesis_1() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved");
+    this.configureByText("|");
+    this.myFixture.type("(");
+    this.assertState("\t(|)");
+    this.myFixture.type("(");
+    this.assertState("\t((|))");
+    this.myFixture.type(AbstractCStyleLanguageAutoEditTest.BS);
+    this.assertState("\t(|)");
+    this.myFixture.type(AbstractCStyleLanguageAutoEditTest.BS);
+    this.assertState("\t|");
   }
   
   @Override
   public void testParenthesis_2() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved");
+    this.configureByText("|");
+    this.myFixture.type("(");
+    this.assertState("\t(|)");
+    this.myFixture.type(")");
+    this.assertState("\t()|");
+    this.myFixture.type(AbstractCStyleLanguageAutoEditTest.BS);
+    this.assertState("\t(|");
+    this.myFixture.type(AbstractCStyleLanguageAutoEditTest.BS);
+    this.assertState("\t|");
   }
   
   @Override
   public void testParenthesis_3() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved");
+    this.configureByText("|");
+    this.myFixture.type("(");
+    this.assertState("\t(|)");
+    this.myFixture.type(AbstractCStyleLanguageAutoEditTest.BS);
+    this.assertState("\t|");
   }
   
   @Override
   public void testParenthesis_4() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved");
+    this.configureByText("|foobar");
+    this.myFixture.type("(");
+    this.assertState("\t(|foobar");
   }
   
   @Override
   public void testParenthesis_5() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved"
-      + "\ntype cannot be resolved");
+    this.configureByText("|");
+    this.myFixture.type(")");
+    this.assertState("\t)|");
+    this.myFixture.type(")");
+    this.assertState("\t))|");
+    this.myFixture.type(AbstractCStyleLanguageAutoEditTest.BS);
+    this.assertState("\t)|");
+    this.myFixture.type(AbstractCStyleLanguageAutoEditTest.BS);
+    this.assertState("\t|");
   }
   
   @Override
   public void testParenthesis_9() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method configureByText(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\nThe method assertState(String) from the type AutoEditInClassBodyTest refers to the missing type Object"
-      + "\ntype cannot be resolved");
+    this.configureByText("|\'\')");
+    this.myFixture.type("(");
+    this.assertState("\t(|\'\')");
   }
 }

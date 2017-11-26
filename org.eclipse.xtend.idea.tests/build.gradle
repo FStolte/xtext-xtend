@@ -16,3 +16,5 @@ ideaDevelopment {
 		project ':org.eclipse.xtend.idea'
 	}
 }
+
+test.enabled = false

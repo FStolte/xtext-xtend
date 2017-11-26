@@ -7,6 +7,10 @@
  */
 package org.eclipse.xtend.idea.highlighting;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import junit.framework.TestCase;
+import org.eclipse.xtend.core.idea.highlighting.XtendHighlightingLexer;
 import org.eclipse.xtend.idea.LightXtendTest;
 
 /**
@@ -14,36 +18,26 @@ import org.eclipse.xtend.idea.LightXtendTest;
  */
 @SuppressWarnings("all")
 public class XtendHighlightingLexerTest extends LightXtendTest {
-  /* @Inject
-   */private /* Provider<XtendHighlightingLexer> */Object lexerProvider;
+  @Inject
+  private Provider<XtendHighlightingLexer> lexerProvider;
   
   public void testStart_01() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method assertEquals(int, Object) is undefined"
-      + "\nThe method assertNotSame(int, Object) is undefined"
-      + "\nThe method assertEquals(int, Object) is undefined"
-      + "\nThe field XtendHighlightingLexerTest.lexerProvider refers to the missing type Provider"
-      + "\nget cannot be resolved"
-      + "\nstart cannot be resolved"
-      + "\ntokenStart cannot be resolved"
-      + "\nadvance cannot be resolved"
-      + "\ntokenStart cannot be resolved"
-      + "\nstart cannot be resolved"
-      + "\ntokenStart cannot be resolved");
+    final XtendHighlightingLexer lexer = this.lexerProvider.get();
+    lexer.start("package mypackage");
+    TestCase.assertEquals(0, lexer.getTokenStart());
+    lexer.advance();
+    TestCase.assertNotSame(Integer.valueOf(0), Integer.valueOf(lexer.getTokenStart()));
+    lexer.start("package mypackage");
+    TestCase.assertEquals(0, lexer.getTokenStart());
   }
   
   public void ignoreStart_02() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method assertEquals(int, Object) is undefined"
-      + "\nThe method assertNotSame(int, Object) is undefined"
-      + "\nThe method assertEquals(int, Object) is undefined"
-      + "\nThe field XtendHighlightingLexerTest.lexerProvider refers to the missing type Provider"
-      + "\nget cannot be resolved"
-      + "\nstart cannot be resolved"
-      + "\ntokenStart cannot be resolved"
-      + "\nadvance cannot be resolved"
-      + "\ntokenStart cannot be resolved"
-      + "\nstart cannot be resolved"
-      + "\ntokenStart cannot be resolved");
+    final XtendHighlightingLexer lexer = this.lexerProvider.get();
+    lexer.start("\'\'\' «» \'\'\'");
+    TestCase.assertEquals(0, lexer.getTokenStart());
+    lexer.advance();
+    TestCase.assertNotSame(Integer.valueOf(0), Integer.valueOf(lexer.getTokenStart()));
+    lexer.start("\'\'\' «» \'\'\'");
+    TestCase.assertEquals(0, lexer.getTokenStart());
   }
 }

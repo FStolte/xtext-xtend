@@ -7,7 +7,51 @@
  */
 package org.eclipse.xtend.idea.execution;
 
+import com.google.common.base.Objects;
+import com.intellij.execution.ExecutionException;
+import com.intellij.execution.Location;
+import com.intellij.execution.PsiLocation;
+import com.intellij.execution.actions.ConfigurationContext;
+import com.intellij.execution.actions.ConfigurationFromContext;
+import com.intellij.execution.actions.RunConfigurationProducer;
+import com.intellij.execution.application.ApplicationConfiguration;
+import com.intellij.execution.configurations.JavaCommandLine;
+import com.intellij.execution.configurations.JavaParameters;
+import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.execution.configurations.RunProfileState;
+import com.intellij.execution.configurations.RuntimeConfigurationError;
+import com.intellij.execution.configurations.RuntimeConfigurationException;
+import com.intellij.execution.executors.DefaultRunExecutor;
+import com.intellij.execution.junit.JUnitConfiguration;
+import com.intellij.execution.runners.ExecutionEnvironmentBuilder;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.extensions.Extensions;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiMethodUtil;
+import com.intellij.testFramework.MapDataContext;
+import com.intellij.testIntegration.JavaTestFramework;
+import com.intellij.testIntegration.TestFramework;
+import com.intellij.util.containers.ContainerUtilRt;
+import java.util.Collections;
+import junit.framework.TestCase;
+import org.eclipse.xtend.core.idea.execution.XtendApplicationConfigurationProducer;
+import org.eclipse.xtend.core.idea.execution.XtendJunitClassConfigurationProducer;
+import org.eclipse.xtend.core.idea.execution.XtendJunitMethodConfigurationProducer;
 import org.eclipse.xtend.idea.XtendIdeaTestCase;
+import org.eclipse.xtend2.lib.StringConcatenation;
+import org.eclipse.xtext.psi.impl.BaseXtextFile;
+import org.eclipse.xtext.xbase.lib.Conversions;
+import org.eclipse.xtext.xbase.lib.Exceptions;
+import org.eclipse.xtext.xbase.lib.Functions.Function1;
+import org.eclipse.xtext.xbase.lib.IterableExtensions;
+import org.eclipse.xtext.xbase.lib.Pair;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author dhuebner - Initial contribution and API
@@ -15,230 +59,356 @@ import org.eclipse.xtend.idea.XtendIdeaTestCase;
 @SuppressWarnings("all")
 public class TraceBasedConfigurationProducerTest extends XtendIdeaTestCase {
   @Override
-  protected boolean isTestSource(final /* VirtualFile */Object srcFolder) {
+  protected boolean isTestSource(final VirtualFile srcFolder) {
     return true;
   }
   
   public void testApplicationConfiguration_1() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nBaseXtextFile cannot be resolved to a type."
-      + "\nRunConfigurationProducer cannot be resolved to a type."
-      + "\nThe method addFile(Object) is undefined"
-      + "\n-> cannot be resolved."
-      + "\nThe method or field psiManager is undefined"
-      + "\nThe method assertTrue(boolean) is undefined"
-      + "\nThe method or field XtendApplicationConfigurationProducer is undefined"
-      + "\nThe method assertEquals(Set<Object>, Object) is undefined"
-      + "\nThe method or field module is undefined"
-      + "\nThe method or field ContainerUtilRt is undefined"
-      + "\nThe method assertTrue(Object) is undefined"
-      + "\nThe method or field PsiMethodUtil is undefined"
-      + "\nThe method assertEquals(String, Object) is undefined"
-      + "\nThe method assertEquals(String, Object) is undefined"
-      + "\nThe method or field XtendApplicationConfigurationProducer is undefined"
-      + "\nThe method or field RunConfigurationProducer is undefined"
-      + "\nThe method or field XtendApplicationConfigurationProducer is undefined"
-      + "\nThe method assertTrue(Object) is undefined"
-      + "\nApplicationConfiguration cannot be resolved to a type."
-      + "\nThe method createConfiguration(PsiElement, Class<? extends RunConfigurationProducer>) from the type TraceBasedConfigurationProducerTest refers to the missing type RunConfiguration"
-      + "\nThe method checkCanRun(RunConfiguration) from the type TraceBasedConfigurationProducerTest refers to the missing type JavaParameters"
-      + "\nThe method createConfiguration(PsiElement, Class<? extends RunConfigurationProducer>) from the type TraceBasedConfigurationProducerTest refers to the missing type RunConfiguration"
-      + "\nThe method createContext(PsiElement) from the type TraceBasedConfigurationProducerTest refers to the missing type ConfigurationContext"
-      + "\nfindFile cannot be resolved"
-      + "\nviewProvider cannot be resolved"
-      + "\nfindElementAt cannot be resolved"
-      + "\nnewHashSet cannot be resolved"
-      + "\ngetModules cannot be resolved"
-      + "\nhasMainMethod cannot be resolved"
-      + "\nmainClass cannot be resolved"
-      + "\nmainClass cannot be resolved"
-      + "\nqualifiedName cannot be resolved"
-      + "\ngetName cannot be resolved"
-      + "\ngetInstance cannot be resolved"
-      + "\nisConfigurationFromContext cannot be resolved");
+    try {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("/**");
+      _builder.newLine();
+      _builder.append("* Test");
+      _builder.newLine();
+      _builder.append("*/");
+      _builder.newLine();
+      _builder.append("class XtendMainClass {");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("/** test method */");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("def static void m|ain(String[] args) {");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("println(\"Hello\")");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("println(\"World\")");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
+      _builder.newLine();
+      _builder.append("}");
+      _builder.newLine();
+      String code = _builder.toString();
+      final int cursorIdx = code.indexOf("|");
+      code = code.replace("|", "");
+      Pair<String, String> _mappedTo = Pair.<String, String>of("XtendMainClass.xtend", code);
+      final VirtualFile file = this.addFile(_mappedTo);
+      final PsiFile xtendFile = this.getPsiManager().findFile(file);
+      TestCase.assertTrue((xtendFile instanceof BaseXtextFile));
+      final PsiElement sourceElement = xtendFile.getViewProvider().findElementAt(cursorIdx);
+      final ApplicationConfiguration configuration = this.<ApplicationConfiguration>createConfiguration(sourceElement, XtendApplicationConfigurationProducer.class);
+      TestCase.assertEquals(Collections.<Module>singleton(this.getModule()), ContainerUtilRt.<Module>newHashSet(configuration.getModules()));
+      TestCase.assertTrue(PsiMethodUtil.hasMainMethod(configuration.getMainClass()));
+      TestCase.assertEquals("XtendMainClass", configuration.getMainClass().getQualifiedName());
+      TestCase.assertEquals("XtendMainClass", configuration.getName());
+      TraceBasedConfigurationProducerTest.checkCanRun(configuration);
+      final ApplicationConfiguration sameConfiguration = this.<ApplicationConfiguration>createConfiguration(sourceElement, XtendApplicationConfigurationProducer.class);
+      final RunConfigurationProducer<ApplicationConfiguration> producer = RunConfigurationProducer.<XtendApplicationConfigurationProducer>getInstance(XtendApplicationConfigurationProducer.class);
+      TestCase.assertTrue(producer.isConfigurationFromContext(sameConfiguration, this.createContext(sourceElement)));
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
   public void testApplicationConfiguration_2() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nBaseXtextFile cannot be resolved to a type."
-      + "\nThe method addFile(Object) is undefined"
-      + "\n-> cannot be resolved."
-      + "\nThe method or field psiManager is undefined"
-      + "\nThe method assertTrue(boolean) is undefined"
-      + "\nThe method or field RunConfigurationProducer is undefined"
-      + "\nThe method or field XtendApplicationConfigurationProducer is undefined"
-      + "\nThe method assertNotNull(Object) is undefined"
-      + "\nThe method createContext(PsiElement) from the type TraceBasedConfigurationProducerTest refers to the missing type ConfigurationContext"
-      + "\nThe method checkCanRun(RunConfiguration) from the type TraceBasedConfigurationProducerTest refers to the missing type JavaParameters"
-      + "\nfindFile cannot be resolved"
-      + "\nviewProvider cannot be resolved"
-      + "\nfindElementAt cannot be resolved"
-      + "\ngetInstance cannot be resolved"
-      + "\ncreateConfigurationFromContext cannot be resolved"
-      + "\nconfiguration cannot be resolved");
+    try {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("import java.util.List");
+      _builder.newLine();
+      _builder.append("|");
+      _builder.newLine();
+      _builder.newLine();
+      _builder.append("/**");
+      _builder.newLine();
+      _builder.append("* Test");
+      _builder.newLine();
+      _builder.append("*/");
+      _builder.newLine();
+      _builder.append("class XtendMainClass {");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("/** test method */");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("def static void main(String[] args) {");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("println(\"Hello\")");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("println(\"World\")");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
+      _builder.newLine();
+      _builder.append("}");
+      _builder.newLine();
+      String code = _builder.toString();
+      final int cursorIdx = code.indexOf("|");
+      code = code.replace("|", "");
+      Pair<String, String> _mappedTo = Pair.<String, String>of("XtendMainClass.xtend", code);
+      final VirtualFile file = this.addFile(_mappedTo);
+      final PsiFile xtendFile = this.getPsiManager().findFile(file);
+      TestCase.assertTrue((xtendFile instanceof BaseXtextFile));
+      final PsiElement sourceElement = xtendFile.getViewProvider().findElementAt(cursorIdx);
+      final ConfigurationContext context = this.createContext(sourceElement);
+      final XtendApplicationConfigurationProducer producer = RunConfigurationProducer.<XtendApplicationConfigurationProducer>getInstance(XtendApplicationConfigurationProducer.class);
+      final ConfigurationFromContext confFromContext = producer.createConfigurationFromContext(context);
+      TestCase.assertNotNull(confFromContext);
+      TraceBasedConfigurationProducerTest.checkCanRun(confFromContext.getConfiguration());
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
   public void testApplicationConfigurationNoSelection() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method addFile(Object) is undefined"
-      + "\n-> cannot be resolved."
-      + "\nThe method or field psiManager is undefined"
-      + "\nThe method or field XtendApplicationConfigurationProducer is undefined"
-      + "\nThe method createConfiguration(PsiElement, Class<? extends RunConfigurationProducer>) from the type TraceBasedConfigurationProducerTest refers to the missing type RunConfiguration"
-      + "\nThe method checkCanRun(RunConfiguration) from the type TraceBasedConfigurationProducerTest refers to the missing type JavaParameters"
-      + "\nfindFile cannot be resolved");
+    try {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("class XtendMainClass {");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("def static void main(String[] args) {");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
+      _builder.newLine();
+      _builder.append("}");
+      _builder.newLine();
+      Pair<String, String> _mappedTo = Pair.<String, String>of("XtendMainClass.xtend", _builder.toString());
+      final VirtualFile file = this.addFile(_mappedTo);
+      final PsiFile xtendFile = this.getPsiManager().findFile(file);
+      final ApplicationConfiguration conf = this.<ApplicationConfiguration>createConfiguration(xtendFile, XtendApplicationConfigurationProducer.class);
+      TraceBasedConfigurationProducerTest.checkCanRun(conf);
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
   public void testJunitConfigurationNoSelection() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field module is undefined"
-      + "\nThe method addFile(Object) is undefined"
-      + "\n-> cannot be resolved."
-      + "\nThe method or field psiManager is undefined"
-      + "\nThe method or field XtendJunitClassConfigurationProducer is undefined"
-      + "\nThe method assertEquals(String, Object) is undefined"
-      + "\nThe method assertEquals(String, Object) is undefined"
-      + "\nThe method addJunit4Lib(Module) from the type TraceBasedConfigurationProducerTest refers to the missing type Object"
-      + "\nThe method createConfiguration(PsiElement, Class<? extends RunConfigurationProducer>) from the type TraceBasedConfigurationProducerTest refers to the missing type RunConfiguration"
-      + "\nThe method checkCanRun(RunConfiguration) from the type TraceBasedConfigurationProducerTest refers to the missing type JavaParameters"
-      + "\nfindFile cannot be resolved"
-      + "\ngetPersistentData cannot be resolved"
-      + "\nMAIN_CLASS_NAME cannot be resolved"
-      + "\ngetPersistentData cannot be resolved"
-      + "\nTEST_OBJECT cannot be resolved");
+    try {
+      this.addJunit4Lib(this.getModule());
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("import org.junit.Assert");
+      _builder.newLine();
+      _builder.append("import org.junit.Test");
+      _builder.newLine();
+      _builder.newLine();
+      _builder.append("class XtendJunitClass extends Assert{");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("@Test");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("def void testMethod() {");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("assertTrue(true)");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("@Test");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("def void testMethod2() {");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("assertTrue(true)");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
+      _builder.newLine();
+      _builder.append("}");
+      _builder.newLine();
+      Pair<String, String> _mappedTo = Pair.<String, String>of("XtendJunitClass.xtend", _builder.toString());
+      final VirtualFile file = this.addFile(_mappedTo);
+      final PsiFile xtendFile = this.getPsiManager().findFile(file);
+      final JUnitConfiguration conf = this.<JUnitConfiguration>createConfiguration(xtendFile, XtendJunitClassConfigurationProducer.class);
+      TestCase.assertEquals("XtendJunitClass", conf.getPersistentData().MAIN_CLASS_NAME);
+      TestCase.assertEquals("class", conf.getPersistentData().TEST_OBJECT);
+      TraceBasedConfigurationProducerTest.checkCanRun(conf);
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
   public void testJunitConfigurationMethod_1() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nBaseXtextFile cannot be resolved to a type."
-      + "\nThe method or field module is undefined"
-      + "\nThe method addFile(Object) is undefined"
-      + "\n-> cannot be resolved."
-      + "\nThe method or field psiManager is undefined"
-      + "\nThe method assertTrue(boolean) is undefined"
-      + "\nThe method or field XtendJunitMethodConfigurationProducer is undefined"
-      + "\nThe method assertEquals(String, Object) is undefined"
-      + "\nThe method assertEquals(String, Object) is undefined"
-      + "\nThe method assertEquals(String, Object) is undefined"
-      + "\nThe method addJunit4Lib(Module) from the type TraceBasedConfigurationProducerTest refers to the missing type Object"
-      + "\nThe method createConfiguration(PsiElement, Class<? extends RunConfigurationProducer>) from the type TraceBasedConfigurationProducerTest refers to the missing type RunConfiguration"
-      + "\nThe method checkCanRun(RunConfiguration) from the type TraceBasedConfigurationProducerTest refers to the missing type JavaParameters"
-      + "\nfindFile cannot be resolved"
-      + "\nviewProvider cannot be resolved"
-      + "\nfindElementAt cannot be resolved"
-      + "\ngetPersistentData cannot be resolved"
-      + "\nMAIN_CLASS_NAME cannot be resolved"
-      + "\ngetPersistentData cannot be resolved"
-      + "\nTEST_OBJECT cannot be resolved"
-      + "\ngetPersistentData cannot be resolved"
-      + "\nMETHOD_NAME cannot be resolved");
+    try {
+      this.addJunit4Lib(this.getModule());
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("import org.junit.Assert");
+      _builder.newLine();
+      _builder.append("import org.junit.Test");
+      _builder.newLine();
+      _builder.newLine();
+      _builder.append("class XtendJunitClass extends Assert{");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("@Test");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("def void test|Method() {");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("assertTrue(true)");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("@Test");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("def void testMethod2() {");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("assertTrue(true)");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
+      _builder.newLine();
+      _builder.append("}");
+      _builder.newLine();
+      String code = _builder.toString();
+      final int cursorIdx = code.indexOf("|");
+      code = code.replace("|", "");
+      Pair<String, String> _mappedTo = Pair.<String, String>of("XtendJunitClass.xtend", code);
+      final VirtualFile file = this.addFile(_mappedTo);
+      final PsiFile xtendFile = this.getPsiManager().findFile(file);
+      TestCase.assertTrue((xtendFile instanceof BaseXtextFile));
+      final PsiElement sourceElement = xtendFile.getViewProvider().findElementAt(cursorIdx);
+      final JUnitConfiguration configuration = this.<JUnitConfiguration>createConfiguration(sourceElement, XtendJunitMethodConfigurationProducer.class);
+      TestCase.assertEquals("XtendJunitClass", configuration.getPersistentData().MAIN_CLASS_NAME);
+      TestCase.assertEquals("method", configuration.getPersistentData().TEST_OBJECT);
+      TestCase.assertEquals("testMethod", configuration.getPersistentData().METHOD_NAME);
+      TraceBasedConfigurationProducerTest.checkCanRun(configuration);
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
   public void testJunitConfigurationMethod_2() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nBaseXtextFile cannot be resolved to a type."
-      + "\nThe method or field module is undefined"
-      + "\nThe method addFile(Object) is undefined"
-      + "\n-> cannot be resolved."
-      + "\nThe method or field psiManager is undefined"
-      + "\nThe method assertTrue(boolean) is undefined"
-      + "\nThe method or field XtendJunitMethodConfigurationProducer is undefined"
-      + "\nThe method assertEquals(String, Object) is undefined"
-      + "\nThe method assertEquals(String, Object) is undefined"
-      + "\nThe method assertEquals(String, Object) is undefined"
-      + "\nThe method addJunit4Lib(Module) from the type TraceBasedConfigurationProducerTest refers to the missing type Object"
-      + "\nThe method createConfiguration(PsiElement, Class<? extends RunConfigurationProducer>) from the type TraceBasedConfigurationProducerTest refers to the missing type RunConfiguration"
-      + "\nThe method checkCanRun(RunConfiguration) from the type TraceBasedConfigurationProducerTest refers to the missing type JavaParameters"
-      + "\nfindFile cannot be resolved"
-      + "\nviewProvider cannot be resolved"
-      + "\nfindElementAt cannot be resolved"
-      + "\ngetPersistentData cannot be resolved"
-      + "\nMAIN_CLASS_NAME cannot be resolved"
-      + "\ngetPersistentData cannot be resolved"
-      + "\nTEST_OBJECT cannot be resolved"
-      + "\ngetPersistentData cannot be resolved"
-      + "\nMETHOD_NAME cannot be resolved");
+    try {
+      this.addJunit4Lib(this.getModule());
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("import org.junit.Assert");
+      _builder.newLine();
+      _builder.append("import org.junit.Test");
+      _builder.newLine();
+      _builder.newLine();
+      _builder.append("class XtendJunitClass extends Assert{");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("@Test");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("def void testMethod() {");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("assertTrue(true)");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("@Test");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("def void testM|ethod2() {");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append("assertTrue(true)");
+      _builder.newLine();
+      _builder.append("\t");
+      _builder.append("}");
+      _builder.newLine();
+      _builder.append("}");
+      _builder.newLine();
+      String code = _builder.toString();
+      final int cursorIdx = code.indexOf("|");
+      code = code.replace("|", "");
+      Pair<String, String> _mappedTo = Pair.<String, String>of("XtendMainClass.xtend", code);
+      final VirtualFile file = this.addFile(_mappedTo);
+      final PsiFile xtendFile = this.getPsiManager().findFile(file);
+      TestCase.assertTrue((xtendFile instanceof BaseXtextFile));
+      final PsiElement sourceElement = xtendFile.getViewProvider().findElementAt(cursorIdx);
+      final JUnitConfiguration configuration = this.<JUnitConfiguration>createConfiguration(sourceElement, XtendJunitMethodConfigurationProducer.class);
+      TestCase.assertEquals("XtendJunitClass", configuration.getPersistentData().MAIN_CLASS_NAME);
+      TestCase.assertEquals("method", configuration.getPersistentData().TEST_OBJECT);
+      TestCase.assertEquals("testMethod2", configuration.getPersistentData().METHOD_NAME);
+      TraceBasedConfigurationProducerTest.checkCanRun(configuration);
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
-  protected Object addJunit4Lib(final /* Module */Object module) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nJavaTestFramework cannot be resolved to a type."
-      + "\nThe method or field Extensions is undefined"
-      + "\nThe method or field TestFramework is undefined"
-      + "\n== cannot be resolved."
-      + "\nThe method or field name is undefined"
-      + "\ngetExtensions cannot be resolved"
-      + "\nEXTENSION_NAME cannot be resolved"
-      + "\nfindFirst cannot be resolved"
-      + "\nisLibraryAttached cannot be resolved"
-      + "\n! cannot be resolved"
-      + "\nsetupLibrary cannot be resolved");
+  protected void addJunit4Lib(final Module module) {
+    final TestFramework[] frameworks = Extensions.<TestFramework>getExtensions(TestFramework.EXTENSION_NAME);
+    final Function1<TestFramework, Boolean> _function = (TestFramework it) -> {
+      String _name = it.getName();
+      return Boolean.valueOf(Objects.equal("JUnit4", _name));
+    };
+    final TestFramework junit4 = IterableExtensions.<TestFramework>findFirst(((Iterable<TestFramework>)Conversions.doWrapArray(frameworks)), _function);
+    boolean _isLibraryAttached = junit4.isLibraryAttached(module);
+    boolean _not = (!_isLibraryAttached);
+    if (_not) {
+      if ((junit4 instanceof JavaTestFramework)) {
+        ((JavaTestFramework)junit4).setupLibrary(module);
+      }
+    }
   }
   
-  protected <T/*  extends RunConfiguration */> T createConfiguration(final /* PsiElement */Object psiElement, final /* Class<? extends RunConfigurationProducer<T>> */Object clazz) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field RunConfigurationProducer is undefined"
-      + "\nThe method assertNotNull(Object) is undefined"
-      + "\nThe method assertNotNull(Object) is undefined"
-      + "\nThe method createContext(PsiElement) from the type TraceBasedConfigurationProducerTest refers to the missing type ConfigurationContext"
-      + "\ngetInstance cannot be resolved"
-      + "\ncreateConfigurationFromContext cannot be resolved"
-      + "\ngetConfiguration cannot be resolved");
+  protected <T extends RunConfiguration> T createConfiguration(final PsiElement psiElement, final Class<? extends RunConfigurationProducer<T>> clazz) {
+    final ConfigurationContext context = this.createContext(psiElement);
+    final RunConfigurationProducer<T> producer = RunConfigurationProducer.<RunConfigurationProducer<T>>getInstance(clazz);
+    TestCase.assertNotNull(producer);
+    final ConfigurationFromContext fromContext = producer.createConfigurationFromContext(context);
+    TestCase.assertNotNull(fromContext);
+    RunConfiguration _configuration = fromContext.getConfiguration();
+    return ((T) _configuration);
   }
   
-  private /* ConfigurationContext */Object createContext(/* @NotNull  */final /* PsiElement */Object psiClass) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nMapDataContext cannot be resolved."
-      + "\nThe method createContext(PsiElement, MapDataContext) from the type TraceBasedConfigurationProducerTest refers to the missing type ConfigurationContext");
+  private ConfigurationContext createContext(@NotNull final PsiElement psiClass) {
+    final MapDataContext dataContext = new MapDataContext();
+    return this.createContext(psiClass, dataContext);
   }
   
-  private /* ConfigurationContext */Object createContext(/* @NotNull  */final /* PsiElement */Object psiClass, /* @NotNull  */final /* MapDataContext */Object dataContext) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field CommonDataKeys is undefined"
-      + "\nThe method or field myProject is undefined"
-      + "\nThe method or field LangDataKeys is undefined"
-      + "\nThe method or field LangDataKeys is undefined"
-      + "\nThe method or field ModuleUtilCore is undefined"
-      + "\nThe method or field Location is undefined"
-      + "\nThe method or field PsiLocation is undefined"
-      + "\nThe method or field ConfigurationContext is undefined"
-      + "\nput cannot be resolved"
-      + "\nPROJECT cannot be resolved"
-      + "\nMODULE cannot be resolved"
-      + "\ngetData cannot be resolved"
-      + "\n=== cannot be resolved"
-      + "\nput cannot be resolved"
-      + "\nMODULE cannot be resolved"
-      + "\nfindModuleForPsiElement cannot be resolved"
-      + "\nput cannot be resolved"
-      + "\nDATA_KEY cannot be resolved"
-      + "\nfromPsiElement cannot be resolved"
-      + "\ngetFromContext cannot be resolved");
+  private ConfigurationContext createContext(@NotNull final PsiElement psiClass, @NotNull final MapDataContext dataContext) {
+    dataContext.<Project>put(CommonDataKeys.PROJECT, this.myProject);
+    Module _data = LangDataKeys.MODULE.getData(dataContext);
+    boolean _tripleEquals = (_data == null);
+    if (_tripleEquals) {
+      dataContext.<Module>put(LangDataKeys.MODULE, ModuleUtilCore.findModuleForPsiElement(psiClass));
+    }
+    dataContext.<Location<?>>put(Location.DATA_KEY, PsiLocation.<PsiElement>fromPsiElement(psiClass));
+    return ConfigurationContext.getFromContext(dataContext);
   }
   
-  public static /* JavaParameters */Object checkCanRun(final /* RunConfiguration */Object configuration)/*  throws ExecutionException */ {
-    throw new Error("Unresolved compilation problems:"
-      + "\nRunProfileState cannot be resolved to a type."
-      + "\nJavaCommandLine cannot be resolved to a type."
-      + "\nRuntimeConfigurationError cannot be resolved to a type."
-      + "\nRuntimeConfigurationException cannot be resolved to a type."
-      + "\nJavaCommandLine cannot be resolved to a type."
-      + "\nThe method or field ExecutionEnvironmentBuilder is undefined"
-      + "\nThe method or field DefaultRunExecutor is undefined"
-      + "\nThe method assertNotNull(RunProfileState) is undefined"
-      + "\nThe method assertTrue(boolean) is undefined"
-      + "\nThe method fail(Object) is undefined"
-      + "\n+ cannot be resolved."
-      + "\nThe method fail(Object) is undefined"
-      + "\n+ cannot be resolved."
-      + "\nUnreachable code: The catch block can never match. It is already handled by a previous condition."
-      + "\ncreate cannot be resolved"
-      + "\ngetRunExecutorInstance cannot be resolved"
-      + "\nbuild cannot be resolved"
-      + "\ngetState cannot be resolved"
-      + "\ncheckConfiguration cannot be resolved"
-      + "\ngetMessage cannot be resolved"
-      + "\ngetMessage cannot be resolved"
-      + "\ngetJavaParameters cannot be resolved");
+  public static JavaParameters checkCanRun(final RunConfiguration configuration) throws ExecutionException {
+    final RunProfileState state = ExecutionEnvironmentBuilder.create(DefaultRunExecutor.getRunExecutorInstance(), configuration).build().getState();
+    TestCase.assertNotNull(state);
+    TestCase.assertTrue((state instanceof JavaCommandLine));
+    try {
+      configuration.checkConfiguration();
+    } catch (final Throwable _t) {
+      if (_t instanceof RuntimeConfigurationError) {
+        final RuntimeConfigurationError e = (RuntimeConfigurationError)_t;
+        String _message = e.getMessage();
+        String _plus = ("cannot run: " + _message);
+        TestCase.fail(_plus);
+      } else if (_t instanceof RuntimeConfigurationException) {
+        final RuntimeConfigurationException e_1 = (RuntimeConfigurationException)_t;
+        String _message_1 = e_1.getMessage();
+        String _plus_1 = ("cannot run: " + _message_1);
+        TestCase.fail(_plus_1);
+      } else {
+        throw Exceptions.sneakyThrow(_t);
+      }
+    }
+    return ((JavaCommandLine) state).getJavaParameters();
   }
 }

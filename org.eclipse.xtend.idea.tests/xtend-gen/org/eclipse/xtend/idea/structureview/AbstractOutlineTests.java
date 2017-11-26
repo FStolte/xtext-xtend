@@ -7,42 +7,75 @@
  */
 package org.eclipse.xtend.idea.structureview;
 
+import com.intellij.ide.structureView.StructureView;
+import com.intellij.ide.structureView.StructureViewBuilder;
+import com.intellij.ide.structureView.newStructureView.StructureViewComponent;
+import com.intellij.lang.LanguageStructureViewBuilder;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.Consumer;
+import org.eclipse.xtend.core.idea.lang.XtendFileType;
 import org.eclipse.xtend2.lib.StringConcatenation;
+import org.eclipse.xtext.idea.tests.LightToolingTest;
 
 /**
  * @author kosyakov - Initial contribution and API
  */
 @SuppressWarnings("all")
-public abstract class AbstractOutlineTests /* implements LightToolingTest  */{
+public abstract class AbstractOutlineTests extends LightToolingTest {
   public AbstractOutlineTests() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method super(Object) is undefined"
-      + "\nThe method or field XtendFileType is undefined"
-      + "\nINSTANCE cannot be resolved");
+    super(XtendFileType.INSTANCE);
   }
   
   public void testSimpleClass() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo {}");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testPackage() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package test class Foo {}");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("test");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testTypeParameter() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo <T extends Object> {}");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo<T extends Object>");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testTypeParameter1() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo <T> {}");
+    _builder.newLine();
+    this.testStructureView(_builder.toString(), this.getTypeParameter1Expectation());
   }
   
   protected String getTypeParameter1Expectation() {
@@ -56,57 +89,138 @@ public abstract class AbstractOutlineTests /* implements LightToolingTest  */{
   }
   
   public void testField() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { String bar }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("bar : String");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testConstructor() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { new(int foo) {} }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("new(int)");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testSimpleMethod() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { def foo() {null} }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("foo() : Object");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testMethodWithParameter() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { def foo(int bar) {null} }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("foo(int) : Object");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testMethodWithParameters() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { def foo(int bar, java.lang.Object x) {null} }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("foo(int, Object) : Object");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testMethodWithReturnType() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { def <T> foo() {null} }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("foo() <T extends Object> : Object");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testMethodWithTypeParameter() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { def <T> foo() {null} }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("foo() <T extends Object> : Object");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testMethodWithReturnTypeParameter() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { def <T> Foo<T> foo() {null} }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("foo() <T extends Object> : Foo<T>");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testOperatorDeclarationWithSymbol() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { def java.lang.String !(Object o) {null} }");
+    _builder.newLine();
+    this.testStructureView(_builder.toString(), this.getOperatorDeclarationWithSymbolExpectation());
   }
   
   protected String getOperatorDeclarationWithSymbolExpectation() {
@@ -123,9 +237,10 @@ public abstract class AbstractOutlineTests /* implements LightToolingTest  */{
   }
   
   public void testOperatorDeclarationWithName() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { def java.lang.String operator_not(Object o) {null} }");
+    _builder.newLine();
+    this.testStructureView(_builder.toString(), this.getOperatorDeclarationWithNameExpectation());
   }
   
   protected String getOperatorDeclarationWithNameExpectation() {
@@ -142,9 +257,10 @@ public abstract class AbstractOutlineTests /* implements LightToolingTest  */{
   }
   
   public void testDispatchMethod() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { def dispatch foo(Object x) {\'\'} def dispatch foo(String y) {\'\'} }");
+    _builder.newLine();
+    this.testStructureView(_builder.toString(), this.getDispatchMethodExpectation());
   }
   
   protected String getDispatchMethodExpectation() {
@@ -167,21 +283,48 @@ public abstract class AbstractOutlineTests /* implements LightToolingTest  */{
   }
   
   public void testInterface() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("interface Foo { int bar def String foo() }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("bar : int");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("foo() : String");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testEnum() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("enum Foo { BAR, BAZ }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("BAR");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("BAZ");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testAnnotationType() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) annotation Foo { int bar String foo = \'\' }");
+    _builder.newLine();
+    this.testStructureView(_builder.toString(), this.getAnnotationTypeExpectation());
   }
   
   protected String getAnnotationTypeExpectation() {
@@ -201,21 +344,36 @@ public abstract class AbstractOutlineTests /* implements LightToolingTest  */{
   }
   
   public void testAnnotationTypeNoMembers() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) annotation Foo { }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testInterfaceNoMembers() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("@SuppressWarnings(\'foo\') interface Foo { }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   public void testCreateExtensionInfo() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { def create \'lalala\' foo() {} }");
+    _builder.newLine();
+    this.testStructureView(_builder.toString(), this.getCreateExtensionInfoExpectation());
   }
   
   protected String getCreateExtensionInfoExpectation() {
@@ -232,9 +390,10 @@ public abstract class AbstractOutlineTests /* implements LightToolingTest  */{
   }
   
   public void testCreateExtensionInfo_dispatch() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo {  dispatch def create value : \'bar\' foo(Integer it) {}  dispatch def create value : \'foo\' foo(String it) {} }");
+    _builder.newLine();
+    this.testStructureView(_builder.toString(), this.getCreateExtensionInfo_dispatchExpectation());
   }
   
   protected String getCreateExtensionInfo_dispatchExpectation() {
@@ -257,9 +416,10 @@ public abstract class AbstractOutlineTests /* implements LightToolingTest  */{
   }
   
   public void testNestedTypes() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo { int foo static class Bar { def bar() {} interface Baz {} enum FooBar{ X } } }");
+    _builder.newLine();
+    this.testStructureView(_builder.toString(), this.getNestedTypesExpectation());
   }
   
   protected String getNestedTypesExpectation() {
@@ -291,39 +451,58 @@ public abstract class AbstractOutlineTests /* implements LightToolingTest  */{
   }
   
   public void testAnonymousTypes() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The method testStructureView(Consumer) is not applicable for the arguments (CharSequence,String)"
-      + "\nThe method testStructureView(Consumer) from the type AbstractOutlineTests refers to the missing type Consumer");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo<T extends Object> { def Foo<String> bar() { new Foo<String>() { override bar() { } } } }");
+    _builder.newLine();
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("aaa.xtend");
+    _builder_1.newLine();
+    _builder_1.append(" ");
+    _builder_1.append("Foo<T extends Object>");
+    _builder_1.newLine();
+    _builder_1.append("  ");
+    _builder_1.append("bar() : Foo<String>");
+    _builder_1.newLine();
+    _builder_1.append("   ");
+    _builder_1.append("new Foo<String>() {...}");
+    _builder_1.newLine();
+    _builder_1.append("    ");
+    _builder_1.append("bar() : Foo<String>");
+    _builder_1.newLine();
+    this.testStructureView(_builder.toString(), _builder_1.toString());
   }
   
   @Override
-  public void testStructureView(final /* Consumer<StructureViewComponent> */Object consumer) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nStructureView cannot be resolved to a type."
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field FileEditorManager is undefined"
-      + "\nThe method or field project is undefined"
-      + "\nThe method or field LanguageStructureViewBuilder is undefined"
-      + "\nThe method or field myFixture is undefined"
-      + "\nThe method or field project is undefined"
-      + "\nThe method or field Disposer is undefined"
-      + "\nfile cannot be resolved"
-      + "\nvirtualFile cannot be resolved"
-      + "\n!== cannot be resolved"
-      + "\n! cannot be resolved"
-      + "\ngetInstance cannot be resolved"
-      + "\ngetSelectedEditor cannot be resolved"
-      + "\n=== cannot be resolved"
-      + "\nINSTANCE cannot be resolved"
-      + "\ngetStructureViewBuilder cannot be resolved"
-      + "\nfile cannot be resolved"
-      + "\n=== cannot be resolved"
-      + "\ncreateStructureView cannot be resolved"
-      + "\nstructureViewComponent cannot be resolved"
-      + "\nconsume cannot be resolved"
-      + "\n!== cannot be resolved"
-      + "\ndispose cannot be resolved");
+  public void testStructureView(final Consumer<StructureViewComponent> consumer) {
+    final VirtualFile myFile = this.myFixture.getFile().getVirtualFile();
+    if ((!(myFile != null))) {
+      throw new AssertionError("configure first");
+    }
+    final FileEditor fileEditor = FileEditorManager.getInstance(this.getProject()).getSelectedEditor(myFile);
+    if ((fileEditor == null)) {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("editor not opened for ");
+      _builder.append(myFile);
+      throw new AssertionError(_builder);
+    }
+    final StructureViewBuilder builder = LanguageStructureViewBuilder.INSTANCE.getStructureViewBuilder(this.myFixture.getFile());
+    if ((builder == null)) {
+      StringConcatenation _builder_1 = new StringConcatenation();
+      _builder_1.append("no builder for ");
+      _builder_1.append(myFile);
+      throw new AssertionError(_builder_1);
+    }
+    StructureView view = null;
+    try {
+      view = builder.createStructureView(fileEditor, this.getProject());
+      final StructureViewComponent component = this.getStructureViewComponent(view);
+      consumer.consume(component);
+    } finally {
+      if ((view != null)) {
+        Disposer.dispose(view);
+      }
+    }
   }
   
-  protected abstract /* StructureViewComponent */Object getStructureViewComponent(final /* StructureView */Object structureView);
+  protected abstract StructureViewComponent getStructureViewComponent(final StructureView structureView);
 }

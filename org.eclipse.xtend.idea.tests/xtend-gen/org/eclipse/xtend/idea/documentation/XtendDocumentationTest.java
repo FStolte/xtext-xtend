@@ -7,149 +7,249 @@
  */
 package org.eclipse.xtend.idea.documentation;
 
+import com.intellij.codeInsight.documentation.DocumentationManager;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiReference;
+import com.intellij.testFramework.PlatformTestCase;
+import com.intellij.testFramework.PsiTestCase;
+import com.intellij.testFramework.PsiTestUtil;
+import java.io.File;
+import junit.framework.TestCase;
+import org.eclipse.xtend.core.idea.lang.XtendLanguage;
+import org.eclipse.xtend2.lib.StringConcatenation;
+import org.eclipse.xtext.idea.tests.LightToolingTest;
+import org.eclipse.xtext.xbase.lib.Exceptions;
+import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
+
 /**
  * @author kosyakov - Initial contribution and API
  * @author moritz.eysholdt@itemis.de
  */
 @SuppressWarnings("all")
-public class XtendDocumentationTest /* implements PsiTestCase  */{
-  private /* VirtualFile */Object src;
+public class XtendDocumentationTest extends PsiTestCase {
+  private VirtualFile src;
   
-  private /* VirtualFile */Object xtendgen;
+  private VirtualFile xtendgen;
   
   @Override
-  protected Object setUp() throws Exception {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field super is undefined"
-      + "\nThe method or field ApplicationManager is undefined"
-      + "\nThe method or field FileUtil is undefined"
-      + "\nThe method getTestName(boolean) is undefined"
-      + "\nThe method or field myFilesToDelete is undefined"
-      + "\nThe method or field LocalFileSystem is undefined"
-      + "\nThe method or field VfsUtil is undefined"
-      + "\nThe method or field VfsUtil is undefined"
-      + "\nThe method myModule(Object) is undefined"
-      + "\nThe method createModule(String) is undefined"
-      + "\nThe method or field LightToolingTest is undefined"
-      + "\nThe method or field module is undefined"
-      + "\nThe method or field XtendLanguage is undefined"
-      + "\nThe method or field PsiTestUtil is undefined"
-      + "\nThe method or field myModule is undefined"
-      + "\nThe method or field PsiTestUtil is undefined"
-      + "\nThe method or field myModule is undefined"
-      + "\nThe method or field PsiTestUtil is undefined"
-      + "\nThe method or field myModule is undefined"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\nThe field XtendDocumentationTest.xtendgen refers to the missing type VirtualFile"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\nThe field XtendDocumentationTest.xtendgen refers to the missing type VirtualFile"
-      + "\nsetUp cannot be resolved"
-      + "\napplication cannot be resolved"
-      + "\nrunWriteAction cannot be resolved"
-      + "\ncreateTempDirectory cannot be resolved"
-      + "\nadd cannot be resolved"
-      + "\ngetInstance cannot be resolved"
-      + "\nrefreshAndFindFileByIoFile cannot be resolved"
-      + "\ncreateDirectoryIfMissing cannot be resolved"
-      + "\ncreateDirectoryIfMissing cannot be resolved"
-      + "\naddFacetToModule cannot be resolved"
-      + "\nINSTANCE cannot be resolved"
-      + "\nID cannot be resolved"
-      + "\naddContentRoot cannot be resolved"
-      + "\naddSourceRoot cannot be resolved"
-      + "\naddSourceRoot cannot be resolved");
+  protected void setUp() throws Exception {
+    super.setUp();
+    final Procedure1<Object> _function = (Object it) -> {
+      try {
+        final File myTempDirectory = FileUtil.createTempDirectory(this.getTestName(true), "test", false);
+        PlatformTestCase.myFilesToDelete.add(myTempDirectory);
+        final VirtualFile root = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(myTempDirectory);
+        this.src = VfsUtil.createDirectoryIfMissing(root, "src");
+        this.xtendgen = VfsUtil.createDirectoryIfMissing(root, "xtend-gen");
+        this.myModule = this.createModule("myModule");
+        LightToolingTest.addFacetToModule(this.getModule(), XtendLanguage.INSTANCE.getID());
+        PsiTestUtil.addContentRoot(this.myModule, root);
+        PsiTestUtil.addSourceRoot(this.myModule, this.src);
+        PsiTestUtil.addSourceRoot(this.myModule, this.xtendgen);
+      } catch (Throwable _e) {
+        throw Exceptions.sneakyThrow(_e);
+      }
+    };
+    ApplicationManager.getApplication().runWriteAction(
+      ((Runnable) new Runnable() {
+          public void run() {
+            _function.apply(null);
+          }
+      }));
   }
   
   public void testJavaClass() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method assertTrue(Object) is undefined"
-      + "\nThe method createFile(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiFile"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\nThe method createReferenceByFileWithMarker(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiReference"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\ngenerateDocumentation cannot be resolved"
-      + "\ncontains cannot be resolved");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("/**");
+    _builder.newLine();
+    _builder.append(" ");
+    _builder.append("* mydocumentation");
+    _builder.newLine();
+    _builder.append(" ");
+    _builder.append("*/");
+    _builder.newLine();
+    _builder.append("public class Foo {");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    this.createFile(this.src, "Foo.java", _builder.toString());
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("class Bar extends F<caret>oo {");
+    _builder_1.newLine();
+    _builder_1.append("}");
+    _builder_1.newLine();
+    final PsiReference xtend = this.createReferenceByFileWithMarker(this.src, "Bar.xtend", _builder_1.toString());
+    final String expected = this.generateDocumentation(xtend);
+    TestCase.assertTrue(expected.contains("mydocumentation"));
   }
   
   public void testXtendClass() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method assertTrue(Object) is undefined"
-      + "\nThe method createFile(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiFile"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\nThe method createReferenceByFileWithMarker(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiReference"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\ngenerateDocumentation cannot be resolved"
-      + "\ncontains cannot be resolved");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("/**");
+    _builder.newLine();
+    _builder.append(" ");
+    _builder.append("* mydocumentation");
+    _builder.newLine();
+    _builder.append(" ");
+    _builder.append("*/");
+    _builder.newLine();
+    _builder.append("class Foo {");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    this.createFile(this.src, "Foo.xtend", _builder.toString());
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("class Bar extends F<caret>oo {");
+    _builder_1.newLine();
+    _builder_1.append("}");
+    _builder_1.newLine();
+    final PsiReference xtend = this.createReferenceByFileWithMarker(this.src, "Bar.xtend", _builder_1.toString());
+    final String expected = this.generateDocumentation(xtend);
+    TestCase.assertTrue(expected.contains("mydocumentation"));
   }
   
   public void testXtendField() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method assertTrue(Object) is undefined"
-      + "\nThe method assertTrue(Object) is undefined"
-      + "\nThe method createFile(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiFile"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\nThe method createReferenceByFileWithMarker(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiReference"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\ngenerateDocumentation cannot be resolved"
-      + "\ncontains cannot be resolved"
-      + "\ncontains cannot be resolved");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("/**");
+    _builder.newLine();
+    _builder.append("\t ");
+    _builder.append("* mydocumentation");
+    _builder.newLine();
+    _builder.append("\t ");
+    _builder.append("*/");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public val String myfoo = \"x\"");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    this.createFile(this.src, "Foo.xtend", _builder.toString());
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("class Bar {");
+    _builder_1.newLine();
+    _builder_1.append("\t");
+    _builder_1.append("val String x = new Foo().my<caret>foo");
+    _builder_1.newLine();
+    _builder_1.append("}");
+    _builder_1.newLine();
+    final PsiReference xtend = this.createReferenceByFileWithMarker(this.src, "Bar.xtend", _builder_1.toString());
+    final String expected = this.generateDocumentation(xtend);
+    TestCase.assertTrue(expected.contains("<b>myfoo = &quot;x&quot;</b>"));
+    TestCase.assertTrue(expected.contains("mydocumentation"));
   }
   
   public void testXtendMethod() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method assertTrue(Object) is undefined"
-      + "\nThe method assertTrue(Object) is undefined"
-      + "\nThe method createFile(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiFile"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\nThe method createReferenceByFileWithMarker(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiReference"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\ngenerateDocumentation cannot be resolved"
-      + "\ncontains cannot be resolved"
-      + "\ncontains cannot be resolved");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("/**");
+    _builder.newLine();
+    _builder.append("\t ");
+    _builder.append("* mydocumentation");
+    _builder.newLine();
+    _builder.append("\t ");
+    _builder.append("*/");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("def myfoo() { \"x\" }");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    this.createFile(this.src, "Foo.xtend", _builder.toString());
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("class Bar {");
+    _builder_1.newLine();
+    _builder_1.append("\t");
+    _builder_1.append("val String x = new Foo().my<caret>foo()");
+    _builder_1.newLine();
+    _builder_1.append("}");
+    _builder_1.newLine();
+    final PsiReference xtend = this.createReferenceByFileWithMarker(this.src, "Bar.xtend", _builder_1.toString());
+    final String expected = this.generateDocumentation(xtend);
+    TestCase.assertTrue(expected.contains("<b>myfoo</b>()"));
+    TestCase.assertTrue(expected.contains("mydocumentation"));
   }
   
   public void testXtendConstructor() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method assertTrue(Object) is undefined"
-      + "\nThe method assertTrue(Object) is undefined"
-      + "\nThe method createFile(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiFile"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\nThe method createReferenceByFileWithMarker(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiReference"
-      + "\nThe field XtendDocumentationTest.src refers to the missing type VirtualFile"
-      + "\ngenerateDocumentation cannot be resolved"
-      + "\ncontains cannot be resolved"
-      + "\ncontains cannot be resolved");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class Foo {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("/**");
+    _builder.newLine();
+    _builder.append("\t ");
+    _builder.append("* mydocumentation");
+    _builder.newLine();
+    _builder.append("\t ");
+    _builder.append("*/");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("new() {}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    this.createFile(this.src, "Foo.xtend", _builder.toString());
+    StringConcatenation _builder_1 = new StringConcatenation();
+    _builder_1.append("class Bar {");
+    _builder_1.newLine();
+    _builder_1.append("\t");
+    _builder_1.append("val String x = new F<caret>oo()");
+    _builder_1.newLine();
+    _builder_1.append("}");
+    _builder_1.newLine();
+    final PsiReference xtend = this.createReferenceByFileWithMarker(this.src, "Bar.xtend", _builder_1.toString());
+    final String expected = this.generateDocumentation(xtend);
+    TestCase.assertTrue(expected.contains("<b>Foo</b>()"));
+    TestCase.assertTrue(expected.contains("mydocumentation"));
   }
   
-  protected /* PsiFile */Object createFile(final /* VirtualFile */Object dir, final String fileName, final String contents) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field myModule is undefined"
-      + "\nInvalid number of arguments. The method createFile(VirtualFile, String, String) is not applicable for the arguments (Object,VirtualFile,String,String)"
-      + "\nThe method createFile(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiFile");
+  protected PsiFile createFile(final VirtualFile dir, final String fileName, final String contents) {
+    try {
+      return this.createFile(this.myModule, dir, fileName, contents);
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
-  protected /* PsiReference */Object createReferenceByFileWithMarker(final /* VirtualFile */Object dir, final String fileName, final String contents) {
-    throw new Error("Unresolved compilation problems:"
-      + "\n+ cannot be resolved."
-      + "\n+ cannot be resolved."
-      + "\nThe method or field myModule is undefined"
-      + "\nInvalid number of arguments. The method createFile(VirtualFile, String, String) is not applicable for the arguments (Object,VirtualFile,String,Object)"
-      + "\nThe method createFile(VirtualFile, String, String) from the type XtendDocumentationTest refers to the missing type PsiFile"
-      + "\nfindReferenceAt cannot be resolved");
+  protected PsiReference createReferenceByFileWithMarker(final VirtualFile dir, final String fileName, final String contents) {
+    try {
+      final String caret = "<caret>";
+      final int index = contents.indexOf(caret);
+      String _substring = contents.substring(0, index);
+      int _length = caret.length();
+      int _plus = (index + _length);
+      String _substring_1 = contents.substring(_plus, contents.length());
+      final String document = (_substring + _substring_1);
+      final PsiFile file = this.createFile(this.myModule, dir, fileName, document);
+      return file.findReferenceAt(index);
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
   
-  protected Object generateDocumentation(final /* PsiReference */Object reference) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method assertNotNull(Object) is undefined"
-      + "\nThe method assertNotNull(Object) is undefined"
-      + "\nThe method generateDocumentation(PsiElement, PsiElement) from the type XtendDocumentationTest refers to the missing type Object"
-      + "\nelement cannot be resolved"
-      + "\nresolve cannot be resolved");
+  protected String generateDocumentation(final PsiReference reference) {
+    String _xblockexpression = null;
+    {
+      final PsiElement originalElement = reference.getElement();
+      final PsiElement element = reference.resolve();
+      TestCase.assertNotNull(originalElement);
+      TestCase.assertNotNull(element);
+      _xblockexpression = this.generateDocumentation(element, originalElement);
+    }
+    return _xblockexpression;
   }
   
-  protected Object generateDocumentation(final /* PsiElement */Object element, final /* PsiElement */Object originalElement) {
-    throw new Error("Unresolved compilation problems:"
-      + "\ngetProviderFromElement cannot be resolved"
-      + "\ngenerateDoc cannot be resolved");
+  protected String generateDocumentation(final PsiElement element, final PsiElement originalElement) {
+    return DocumentationManager.getProviderFromElement(element, originalElement).generateDoc(element, originalElement);
   }
 }

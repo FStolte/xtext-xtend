@@ -7,148 +7,252 @@
  */
 package org.eclipse.xtend.idea.completion;
 
+import com.intellij.codeInsight.template.TemplateContextType;
+import com.intellij.codeInsight.template.impl.TemplateManagerImpl;
+import com.intellij.psi.PsiFile;
+import junit.framework.TestCase;
+import org.eclipse.xtend.core.idea.completion.XtendCodeContextType;
 import org.eclipse.xtend.idea.LightXtendTest;
+import org.eclipse.xtend.lib.annotations.Data;
+import org.eclipse.xtend2.lib.StringConcatenation;
+import org.eclipse.xtext.xbase.lib.Conversions;
+import org.eclipse.xtext.xbase.lib.Functions.Function1;
+import org.eclipse.xtext.xbase.lib.IterableExtensions;
+import org.eclipse.xtext.xbase.lib.Pure;
+import org.eclipse.xtext.xbase.lib.util.ToStringBuilder;
 
 /**
  * @author efftinge - Initial contribution and API
  */
 @SuppressWarnings("all")
 public class XtendCodeContextTypeTest extends LightXtendTest {
-  /* @Data
-   */public static class ContextTypeAssertion {
-    private /* TemplateContextType */Object contextType;
+  @Data
+  public static class ContextTypeAssertion {
+    private final TemplateContextType contextType;
     
-    private boolean shouldMatch;
+    private final boolean shouldMatch;
+    
+    public ContextTypeAssertion(final TemplateContextType contextType, final boolean shouldMatch) {
+      super();
+      this.contextType = contextType;
+      this.shouldMatch = shouldMatch;
+    }
+    
+    @Override
+    @Pure
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((this.contextType== null) ? 0 : this.contextType.hashCode());
+      result = prime * result + (this.shouldMatch ? 1231 : 1237);
+      return result;
+    }
+    
+    @Override
+    @Pure
+    public boolean equals(final Object obj) {
+      if (this == obj)
+        return true;
+      if (obj == null)
+        return false;
+      if (getClass() != obj.getClass())
+        return false;
+      XtendCodeContextTypeTest.ContextTypeAssertion other = (XtendCodeContextTypeTest.ContextTypeAssertion) obj;
+      if (this.contextType == null) {
+        if (other.contextType != null)
+          return false;
+      } else if (!this.contextType.equals(other.contextType))
+        return false;
+      if (other.shouldMatch != this.shouldMatch)
+        return false;
+      return true;
+    }
+    
+    @Override
+    @Pure
+    public String toString() {
+      ToStringBuilder b = new ToStringBuilder(this);
+      b.add("contextType", this.contextType);
+      b.add("shouldMatch", this.shouldMatch);
+      return b.toString();
+    }
+    
+    @Pure
+    public TemplateContextType getContextType() {
+      return this.contextType;
+    }
+    
+    @Pure
+    public boolean isShouldMatch() {
+      return this.shouldMatch;
+    }
   }
   
   public void testContexts_01() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method is(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method is(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nGeneric cannot be resolved"
-      + "\nMember cannot be resolved"
-      + "\nStatement cannot be resolved"
-      + "\nExpression cannot be resolved"
-      + "\nTemplateExpression cannot be resolved");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class MyClass {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("<caret>");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    this.assertContext(_builder, 
+      this.is(XtendCodeContextType.Generic.class), 
+      this.is(XtendCodeContextType.Member.class), 
+      this.not(XtendCodeContextType.Statement.class), 
+      this.not(XtendCodeContextType.Expression.class), 
+      this.not(XtendCodeContextType.TemplateExpression.class));
   }
   
   public void testContexts_02() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method is(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nGeneric cannot be resolved"
-      + "\nMember cannot be resolved"
-      + "\nStatement cannot be resolved"
-      + "\nExpression cannot be resolved"
-      + "\nTemplateExpression cannot be resolved");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class MyClass {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("def <caret> foo() {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    this.assertContext(_builder, 
+      this.is(XtendCodeContextType.Generic.class), 
+      this.not(XtendCodeContextType.Member.class), 
+      this.not(XtendCodeContextType.Statement.class), 
+      this.not(XtendCodeContextType.Expression.class), 
+      this.not(XtendCodeContextType.TemplateExpression.class));
   }
   
   public void testContexts_03() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method is(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method is(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method is(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nGeneric cannot be resolved"
-      + "\nMember cannot be resolved"
-      + "\nStatement cannot be resolved"
-      + "\nExpression cannot be resolved"
-      + "\nTemplateExpression cannot be resolved");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class MyClass {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("def foo() {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("<caret>");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    this.assertContext(_builder, 
+      this.is(XtendCodeContextType.Generic.class), 
+      this.not(XtendCodeContextType.Member.class), 
+      this.is(XtendCodeContextType.Statement.class), 
+      this.is(XtendCodeContextType.Expression.class), 
+      this.not(XtendCodeContextType.TemplateExpression.class));
   }
   
   public void testContexts_04() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method is(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method is(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nGeneric cannot be resolved"
-      + "\nMember cannot be resolved"
-      + "\nStatement cannot be resolved"
-      + "\nExpression cannot be resolved"
-      + "\nTemplateExpression cannot be resolved");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class MyClass {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("def boolean foo() {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("if (<caret>foo) {");
+    _builder.newLine();
+    _builder.append("\t\t\t");
+    _builder.append("return false");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("return true");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    this.assertContext(_builder, 
+      this.is(XtendCodeContextType.Generic.class), 
+      this.not(XtendCodeContextType.Member.class), 
+      this.not(XtendCodeContextType.Statement.class), 
+      this.is(XtendCodeContextType.Expression.class), 
+      this.not(XtendCodeContextType.TemplateExpression.class));
   }
   
   public void testContexts_05() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method or field XtendCodeContextType is undefined"
-      + "\nThe method is(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method not(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nThe method is(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type TemplateContextType"
-      + "\nGeneric cannot be resolved"
-      + "\nMember cannot be resolved"
-      + "\nStatement cannot be resolved"
-      + "\nExpression cannot be resolved"
-      + "\nTemplateExpression cannot be resolved");
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("class MyClass {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("def foo() \'");
+    _builder.append("\'\'");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("<caret>");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("\'");
+    _builder.append("\'\'");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    this.assertContext(_builder, 
+      this.is(XtendCodeContextType.Generic.class), 
+      this.not(XtendCodeContextType.Member.class), 
+      this.not(XtendCodeContextType.Statement.class), 
+      this.not(XtendCodeContextType.Expression.class), 
+      this.is(XtendCodeContextType.TemplateExpression.class));
   }
   
   protected void assertContext(final CharSequence text, final XtendCodeContextTypeTest.ContextTypeAssertion... contextTypes) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method configureByText(String) is undefined"
-      + "\nThe method assertEquals(String, boolean, Object) is undefined"
-      + "\n! cannot be resolved."
-      + "\nThe method or field editor is undefined"
-      + "\nThe field XtendCodeContextTypeTest.ContextTypeAssertion.contextType refers to the missing type TemplateContextType"
-      + "\nThe field XtendCodeContextTypeTest.ContextTypeAssertion.contextType refers to the missing type TemplateContextType"
-      + "\ntoString cannot be resolved"
-      + "\nisInContext cannot be resolved"
-      + "\ncaretModel cannot be resolved"
-      + "\noffset cannot be resolved");
+    final PsiFile file = this.configureByText(text.toString());
+    for (final XtendCodeContextTypeTest.ContextTypeAssertion type : contextTypes) {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.newLine();
+      _builder.append("Code Context :");
+      _builder.newLine();
+      _builder.append("\t\t");
+      _builder.append(text, "\t\t");
+      _builder.newLineIfNotEmpty();
+      _builder.newLine();
+      _builder.append("Should ");
+      {
+        if ((!type.shouldMatch)) {
+          _builder.append("NOT ");
+        }
+      }
+      _builder.append("match: ");
+      String _string = type.contextType.toString();
+      _builder.append(_string);
+      _builder.newLineIfNotEmpty();
+      _builder.newLine();
+      TestCase.assertEquals(_builder.toString(), 
+        type.shouldMatch, type.contextType.isInContext(file, this.getEditor().getCaretModel().getOffset()));
+    }
   }
   
-  protected XtendCodeContextTypeTest.ContextTypeAssertion not(final /* Class<? extends TemplateContextType> */Object clazz) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The constructor ContextTypeAssertion() is not applicable for the arguments (Object,boolean)"
-      + "\nThe method findTemplateContext(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type Object");
+  protected XtendCodeContextTypeTest.ContextTypeAssertion not(final Class<? extends TemplateContextType> clazz) {
+    final TemplateContextType ctxType = this.findTemplateContext(clazz);
+    return new XtendCodeContextTypeTest.ContextTypeAssertion(ctxType, false);
   }
   
-  protected XtendCodeContextTypeTest.ContextTypeAssertion is(final /* Class<? extends TemplateContextType> */Object clazz) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nInvalid number of arguments. The constructor ContextTypeAssertion() is not applicable for the arguments (Object,boolean)"
-      + "\nThe method findTemplateContext(Class<? extends TemplateContextType>) from the type XtendCodeContextTypeTest refers to the missing type Object");
+  protected XtendCodeContextTypeTest.ContextTypeAssertion is(final Class<? extends TemplateContextType> clazz) {
+    final TemplateContextType ctxType = this.findTemplateContext(clazz);
+    return new XtendCodeContextTypeTest.ContextTypeAssertion(ctxType, true);
   }
   
-  protected Object findTemplateContext(final /* Class<? extends TemplateContextType> */Object clazz) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field TemplateManagerImpl is undefined"
-      + "\n+ cannot be resolved."
-      + "\nallContextTypes cannot be resolved"
-      + "\nfindFirst cannot be resolved"
-      + "\n=== cannot be resolved"
-      + "\n+ cannot be resolved");
+  protected TemplateContextType findTemplateContext(final Class<? extends TemplateContextType> clazz) {
+    final Function1<TemplateContextType, Boolean> _function = (TemplateContextType it) -> {
+      return Boolean.valueOf(clazz.isInstance(it));
+    };
+    final TemplateContextType result = IterableExtensions.<TemplateContextType>findFirst(((Iterable<TemplateContextType>)Conversions.doWrapArray(TemplateManagerImpl.getAllContextTypes())), _function);
+    if ((result == null)) {
+      String _name = clazz.getName();
+      String _plus = ("The context type " + _name);
+      String _plus_1 = (_plus + " wasn\'t registered.");
+      throw new AssertionError(_plus_1);
+    }
+    return result;
   }
 }

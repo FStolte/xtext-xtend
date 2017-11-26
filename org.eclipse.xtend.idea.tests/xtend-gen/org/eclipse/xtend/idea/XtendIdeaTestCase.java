@@ -7,26 +7,31 @@
  */
 package org.eclipse.xtend.idea;
 
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.roots.ContentEntry;
+import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import org.eclipse.xtend.core.idea.lang.XtendLanguage;
+import org.eclipse.xtext.idea.tests.AbstractIdeaTestCase;
+import org.eclipse.xtext.idea.tests.LibraryUtil;
+import org.eclipse.xtext.idea.tests.LightToolingTest;
+import org.eclipse.xtext.xbase.lib.Exceptions;
+
 /**
  * @author dhuebner - Initial contribution and API
  */
 @SuppressWarnings("all")
-public abstract class XtendIdeaTestCase /* implements AbstractIdeaTestCase  */{
+public abstract class XtendIdeaTestCase extends AbstractIdeaTestCase {
   @Override
-  public Object configureModule(final /* Module */Object module, final /* ModifiableRootModel */Object model, final /* ContentEntry */Object entry) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nThe method or field LibraryUtil is undefined"
-      + "\nThe method or field VfsUtil is undefined"
-      + "\nThe method or field project is undefined"
-      + "\nThe method or field LightToolingTest is undefined"
-      + "\nThe method or field XtendLanguage is undefined"
-      + "\naddXtendLibrary cannot be resolved"
-      + "\ncreateDirectoryIfMissing cannot be resolved"
-      + "\nbaseDir cannot be resolved"
-      + "\naddSourceFolder cannot be resolved"
-      + "\ntestSource cannot be resolved"
-      + "\naddFacetToModule cannot be resolved"
-      + "\nINSTANCE cannot be resolved"
-      + "\nID cannot be resolved");
+  public void configureModule(final Module module, final ModifiableRootModel model, final ContentEntry entry) {
+    try {
+      LibraryUtil.addXtendLibrary(model);
+      final VirtualFile srcGenFolder = VfsUtil.createDirectoryIfMissing(this.getProject().getBaseDir(), "xtend-gen");
+      entry.addSourceFolder(srcGenFolder, this.isTestSource(srcGenFolder));
+      LightToolingTest.addFacetToModule(module, XtendLanguage.INSTANCE.getID());
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
   }
 }
